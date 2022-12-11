@@ -8,12 +8,12 @@
 
 	<h1>PIZZE</h1>
 	<a href="/pizza/create">
-		Aggiungi una Pizza
+		Add Pizza
 	</a>
-	<h2 th:if="${pizzas.size() < 1}">NON CI SONO PIZZE PRESENTI AL MOMENTO</h2>
+	<h2 th:if="${pizzas.size()> < 1}">NON CI SONO PIZZE PRESENTI AL MOMENTO</h2>
 	
 	
-	<ul th:unless="${pizzas.size() < 1}">
+	<ul th:unless="${pizzas.size()> < 1}">
 		
 			<li th:each="pizza : ${pizzas}" th:object="${pizza}">
 		

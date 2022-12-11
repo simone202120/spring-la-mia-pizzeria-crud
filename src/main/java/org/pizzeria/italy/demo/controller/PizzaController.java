@@ -7,19 +7,21 @@ import org.pizzeria.italy.demo.pojo.Pizza;
 import org.pizzeria.italy.demo.service.PizzaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import ch.qos.logback.core.model.Model;
 import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/")
-public class MainController {
-	
+public class PizzaController {
+
 	@Autowired
 	private PizzaService pizzaService;
 	
@@ -41,7 +43,13 @@ public class MainController {
 		return "pizza-create";
 	}
 	@PostMapping("/pizza/create")
-	public String storePizza(@Valid Pizza pizza) {
+	public String storePizza(@Valid Pizza pizza, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+		
+		if (bindingResult.hasErrors()) {
+			
+			redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+			return "redirect:/pizza/create";
+		}
 		
 		pizzaService.save(pizza);
 		
@@ -75,4 +83,19 @@ public class MainController {
 		
 		return "redirect:/";
 	}
+	
+	@GetMapping("/pizza/search")
+	public String searchPizza(Model model, 
+			@RequestParam(name = "query", required = false) String query) {
+		
+
+		List<Pizza> pizzas = (query == null || query.isEmpty())
+							? pizzaService.findAll()
+							: pizzaService.findByName(query);
+		
+		model.addAttribute("pizzas", pizzas);
+		
+		return "pizza-search";
+	}
 }
+
